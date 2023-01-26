@@ -1,0 +1,33 @@
+version: '3'
+networks:
+  net:
+    ipam:
+      config:
+      - subnet: 20.10.10.0/24
+services:
+  server:
+    build:
+      context: ./api-server/
+      dockerfile: Dockerfile
+    container_name: server
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    networks:
+      net:
+        ipv4_address: 20.10.10.10
+  client:
+    build:
+      context: ./api-client/
+      dockerfile: Dockerfile
+    container_name: client
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      - SERVER_IP=20.10.10.10
+    depends_on:
+      - "server"
+    networks:
+      net:
+        ipv4_address: 20.10.10.113
